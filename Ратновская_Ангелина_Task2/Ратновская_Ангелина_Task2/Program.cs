@@ -22,9 +22,9 @@ namespace ConsoleApplication1
         }
 
         // Метод, в который передается универсальный делегат.
-        static double Method<T>(Function<T> SomeMethod, T item, double sum1)
+        static double Method<T>(Function<T> SomeMethod, T item, double sum)
         {
-            return SomeMethod(item, sum1);
+            return SomeMethod(item, sum);
         }
 
         // Класс, содержащий метод для чтения файла и событие, возникающее, в случае, когда файл прочитан. 

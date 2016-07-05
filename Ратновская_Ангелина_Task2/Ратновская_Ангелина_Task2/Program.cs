@@ -76,6 +76,8 @@ namespace ConsoleApplication1
 
         static void Main()
         {
+            const string separator = ";";
+
             // Подписываемся на события чтения и записи. 
             FileReader reader = new FileReader();            
             reader.Read += () => { Console.WriteLine("Чтение файла завершено"); };
@@ -83,8 +85,8 @@ namespace ConsoleApplication1
             FileWriter writer = new FileWriter();
             writer.Written += () => { Console.WriteLine("Запись файла завершена"); };
 
-            // Читаем файл, делаем из него массив, разделяя знаком ";".
-            string[] separators = { ";" };
+            // Читаем файл, делаем из него массив.
+            string[] separators = { separator };
             string[] words = reader.ReadingFileMethod(@"D:\input.txt").Split(separators, StringSplitOptions.None);
 
             // Обрабатываем полученный массив. 

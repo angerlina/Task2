@@ -1,6 +1,7 @@
 ﻿using System;
+using System.IO;
 
-namespace ConsoleApplication1
+namespace Ратновская_Ангелина_Task2
 {
     class Program
     {
@@ -22,32 +23,41 @@ namespace ConsoleApplication1
         }
 
         // Метод, в который передается универсальный делегат.
-        static double Method<T>(Function<T> SomeMethod, T item, double sum)
+        static double Method<T>(Function<T> someMethod, T item, double sum)
         {
-            return SomeMethod(item, sum);
+            return someMethod(item, sum);
         }
-
+        
         // Класс, содержащий метод для чтения файла и событие, возникающее, в случае, когда файл прочитан. 
         class FileReader
         {
             // Метод для чтения файла. 
             public string ReadingFileMethod(string path)
             {
-                var file = new System.IO.StreamReader(path);
-
-                string line = file.ReadToEnd();
-                var fileInfo = new System.IO.FileInfo(path);
-                //Если файл прочитан, вызывается событие Read.
-                if (fileInfo.Length == line.Length)
+                try
                 {
-                    if (Read != null)
-                    {
-                        Read();
-                    }
-                }
-                return line;
-            }
+                    var file = new StreamReader(path);
 
+                    string line = file.ReadToEnd();
+                    var fileInfo = new FileInfo(path);
+                    //Если файл прочитан, вызывается событие Read.
+                    if (fileInfo.Length == line.Length)
+                    {
+                        if (Read != null)
+                        {
+                            Read();
+                        }
+                    }
+                    return line;
+                }
+                catch (FileNotFoundException)
+                {
+                    const string str = "Файл D:\\input.txt не найден";
+                    Console.WriteLine(str);
+                    Console.ReadKey();
+                    return null;
+                }            
+            }
             public event Action Read;
         }
 
@@ -57,17 +67,16 @@ namespace ConsoleApplication1
             // Метод для записи файла. 
             public void WritingFileMethod(string path, string str)
             {
-                System.IO.File.WriteAllText(path, str);
 
-                var file = new System.IO.StreamReader(path);
+                File.WriteAllText(path, str);
+
+                var file = new StreamReader(path);
                 var fileStr = file.ReadToEnd();
                 // если файл успешно записался, вызывается событие Written 
-                if (fileStr == str)
+                if (fileStr != str) return;
+                if (Written != null)
                 {
-                    if (Written != null)
-                    {
-                        Written();
-                    }
+                    Written();
                 }
             }
 
@@ -78,15 +87,21 @@ namespace ConsoleApplication1
         {
             const string separator = ";";
 
-            // Подписываемся на события чтения и записи. 
-            FileReader reader = new FileReader();            
-            reader.Read += () => { Console.WriteLine("Чтение файла завершено"); };
+            // Проверка, что файл не пустой.
+            FileReader reader = new FileReader();
+            if (reader.ReadingFileMethod(@"D:\input.txt") == null)
+            {
+                return;
+            }           
 
+            // Подписываемся на события чтения и записи.                       
+            reader.Read += () => { Console.WriteLine("Чтение файла завершено"); };
             FileWriter writer = new FileWriter();
             writer.Written += () => { Console.WriteLine("Запись файла завершена"); };
 
             // Читаем файл, делаем из него массив.
-            string[] separators = { separator };
+            string[] separators = { separator };            
+
             string[] words = reader.ReadingFileMethod(@"D:\input.txt").Split(separators, StringSplitOptions.None);
 
             // Обрабатываем полученный массив. 
@@ -110,7 +125,7 @@ namespace ConsoleApplication1
             }
 
             // Создаем строку для записи в файл. 
-            string result = String.Format("Арифметическая сумма = {0}\r\nЧисло символов = {1}", sum1, sum2);
+            string result = $"Арифметическая сумма = {sum1}\r\nЧисло символов = {sum2}";
 
             // Записываем ее в файл. 
             writer.WritingFileMethod(@"D:\output.txt", result);

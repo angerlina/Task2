@@ -67,8 +67,17 @@ namespace Ратновская_Ангелина_Task2
             // Метод для записи файла. 
             public void WritingFileMethod(string path, string str)
             {
-
-                File.WriteAllText(path, str);
+                try
+                {
+                    File.WriteAllText(path, str);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    
+                    Console.WriteLine("Недостаточно прав для записи файла");
+                    return;
+                }
+                
 
                 var file = new StreamReader(path);
                 var fileStr = file.ReadToEnd();
